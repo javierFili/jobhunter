@@ -61,8 +61,8 @@ public record JobOfferDraft(
 
         public Builder sourceUrl(String v) { sourceUrl = v; return this; }
         public Builder applyUrl(String v) { applyUrl = v; return this; }
-        public Builder title(String v) { title = v; return this; }
-        public Builder company(String v) { companyName = v; return this; }
+        public Builder title(String v) { title = v == null ? null : v.replaceAll("\\s+", " ").strip(); return this; }
+        public Builder company(String v) { companyName = v == null ? null : v.replaceAll("\\s+", " ").strip(); return this; }
         public Builder descriptionHtml(String v) { descriptionHtml = v; return this; }
         public Builder descriptionText(String v) { descriptionText = v; return this; }
         public Builder location(String v) { locationText = v; return this; }

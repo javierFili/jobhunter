@@ -70,7 +70,10 @@ public class SkillService {
         if (norm == null || norm.isBlank() || norm.length() > 100) {
             throw ApiException.badRequest("VALIDATION_FAILED", "Nombre de habilidad inválido");
         }
-        return skills.findByNormalizedName(norm).orElseGet(() -> {
+        // An alias of an existing skill ("rest apis" → REST) must not create a duplicate catalogue entry.
+        return skills.findByNormalizedName(norm).or(() -> skills.findAll().stream()
+                .filter(s -> s.getAliases().stream().anyMatch(a -> norm.equals(Skill.normalize(a))))
+                .findFirst()).orElseGet(() -> {
             Skill created = skills.save(new Skill(name, category));
             dictionary.invalidate();
             return created;

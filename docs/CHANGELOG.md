@@ -34,6 +34,14 @@ Todos los cambios relevantes de este proyecto se documentan aquí. Formato basad
 - Despliegue sin Docker: `deploy/jobhunter.service` (systemd endurecido), `deploy/nginx-jobhunter.conf` (TLS, CSP,
   HSTS), `scripts/backup.sh` (mysqldump + archivos cifrados con age, rotación 14 días).
 
+### Corregido (primera búsqueda real con el perfil del usuario, 2026-11-27)
+- La búsqueda por palabra clave usaba prefijo FULLTEXT (`java*`) y "java" coincidía con "JavaScript" → ahora palabra completa.
+- Remote OK ignoraba la palabra clave y traía todo el feed → usa `?tag=` (filtro por etiqueta de la fuente).
+- Tareas de IA en paralelo fallaban por bloqueo optimista al registrar el último éxito/error de la integración →
+  la telemetría se escribe con UPDATE directo, sin versión.
+- Crear una habilidad cuyo nombre es alias de otra ("REST APIs" → REST) creaba un duplicado en el catálogo.
+- Títulos y empresas con saltos de línea/espacios repetidos se normalizan al ingerir.
+
 ### Corregido (encontrado al ejecutar contra MySQL real y la app real)
 - Colecciones perezosas leídas fuera de transacción (ofertas, experiencias, proyectos, perfiles) → carga inmediata por lotes.
 - Filtro por idioma requerido no coincidía con el formato canónico JSON de MySQL.

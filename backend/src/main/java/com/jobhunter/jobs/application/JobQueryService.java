@@ -147,14 +147,17 @@ public class JobQueryService {
         };
     }
 
-    /** FULLTEXT (boolean mode) for words ≥ 3 chars; shorter tokens (e.g. "Go", "C#") fall back to LIKE on the title. */
+    /**
+     * FULLTEXT (boolean mode) for words ≥ 3 chars, matched as WHOLE words (a trailing "*" would make "java" match
+     * "javascript"); shorter tokens (e.g. "Go", "C#") fall back to LIKE on the title.
+     */
     private static Predicate keyword(Root<JobOffer> root, CriteriaBuilder cb, String raw) {
         List<String> longWords = new ArrayList<>();
         List<Predicate> shortWords = new ArrayList<>();
         for (String w : raw.trim().split("\\s+")) {
             String clean = w.replaceAll("[+\\-<>()~*\"@]", "").trim();
             if (clean.isEmpty()) continue;
-            if (clean.length() >= 3 && clean.matches("[\\p{L}\\p{N}]+")) longWords.add("+" + clean + "*");
+            if (clean.length() >= 3 && clean.matches("[\\p{L}\\p{N}]+")) longWords.add("+" + clean);
             else shortWords.add(cb.like(cb.lower(root.get("title")), "%" + escapeLike(clean.toLowerCase(Locale.ROOT)) + "%", '\\'));
         }
         List<Predicate> all = new ArrayList<>(shortWords);

@@ -32,12 +32,16 @@ public class RemoteOkConnector extends HttpConnectorSupport implements JobSource
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities(false, false, false, false, true, false, false);
+        return new Capabilities(true, false, false, false, true, false, false);
     }
 
     @Override
     public FetchResult fetch(SourceQuery q, Map<String, String> credentials) {
-        var response = http.get(policy("remoteok", 0.05, Duration.ofSeconds(30)), uri("remoteok", "/api", Map.of()), null);
+        // Remote OK filters by tag (?tag=java); without keywords it returns the whole recent feed.
+        String tag = q.keywords() == null || q.keywords().isBlank() ? null
+                : q.keywords().trim().split("\\s+")[0].toLowerCase(java.util.Locale.ROOT);
+        var response = http.get(policy("remoteok", 0.05, Duration.ofSeconds(30)),
+                uri("remoteok", "/api", tag == null ? Map.of() : Map.of("tag", tag)), null);
         JsonNode root = parse(response, "Remote OK");
         List<JobOfferDraft> items = new ArrayList<>();
         if (root.isArray()) {

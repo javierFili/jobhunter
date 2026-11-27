@@ -140,5 +140,9 @@ class ProfileIT extends IntegrationTest {
         String token = register("cat@test.example");
         mvc.perform(get("/api/v1/catalog/skills?q=spring").header("Authorization", bearer(token)))
                 .andExpect(status().isOk()).andExpect(jsonPath("$[0].name").value("Spring"));
+        // an alias of an existing catalogue skill returns that skill instead of creating a duplicate
+        mvc.perform(post("/api/v1/catalog/skills").header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON).content(json(Map.of("name", "REST APIs", "category", "METHODOLOGY"))))
+                .andExpect(jsonPath("$.name").value("REST"));
     }
 }

@@ -167,12 +167,13 @@ public class IntegrationService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void recordSuccess(IntegrationCode code) {
-        setting(code).recordSuccess(clock.instant());
+        repository.markSuccess(code.name(), clock.instant());
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void recordError(IntegrationCode code, String message) {
-        setting(code).recordError(clock.instant(), message);
+        repository.markError(code.name(), clock.instant(),
+                message == null ? null : message.substring(0, Math.min(1000, message.length())));
     }
 
     @Transactional(readOnly = true)

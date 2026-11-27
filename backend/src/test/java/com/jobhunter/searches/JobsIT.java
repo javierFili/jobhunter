@@ -141,7 +141,16 @@ class JobsIT extends IntegrationTest {
                         .allowedLocations(List.of("Bolivia")).publishedAt(Instant.now(), false).build(),
                 JobOfferDraft.builder("himalayas", "f2").sourceUrl("https://example.test/f/2").title("PHP Engineer")
                         .company("TEST DATA F2").descriptionHtml("<p>Laravel</p>")
+                        .allowedLocations(List.of("Germany")).publishedAt(Instant.now(), false).build(),
+                JobOfferDraft.builder("himalayas", "f3").sourceUrl("https://example.test/f/3").title("Frontend\n  Engineer")
+                        .company("TEST DATA F3").descriptionHtml("<p>JavaScript and TypeScript</p>")
                         .allowedLocations(List.of("Germany")).publishedAt(Instant.now(), false).build()));
+        // keywords match whole words: "java" must not match "JavaScript"; titles are whitespace-normalised
+        mvc.perform(get("/api/v1/jobs?q=java").header("Authorization", bearer(token)))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].companyName").value("TEST DATA F1"));
+        mvc.perform(get("/api/v1/jobs?q=javascript").header("Authorization", bearer(token)))
+                .andExpect(jsonPath("$.content[0].title").value("Frontend Engineer"));
         long java = jdbc.queryForObject("SELECT id FROM skills WHERE normalized_name='java'", Long.class);
         String page = mvc.perform(get("/api/v1/jobs?eligibility=ELIGIBLE&skillIds=" + java).header("Authorization", bearer(token)))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(1))
