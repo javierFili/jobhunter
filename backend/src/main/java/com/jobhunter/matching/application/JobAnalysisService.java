@@ -110,12 +110,36 @@ public class JobAnalysisService {
         return new JobRequirement(offerId, "SKILL", importance, skillId, s.name(), s.minYears(), null, null, "AI", analysisId);
     }
 
-    /** Catalogue id for a technology name: exact normalized name first, then the alias-aware dictionary. */
+    /** Words that may surround a technology name without changing which technology it is ("RESTful API", "Java 21"). */
+    private static final java.util.Set<String> FILLER = java.util.Set.of("api", "apis", "framework", "frameworks",
+            "library", "libraries", "language", "languages", "lenguaje", "development", "desarrollo", "programming",
+            "programación", "experience", "experiencia", "knowledge", "conocimiento", "conocimientos", "skills",
+            "advanced", "avanzado", "avanzada", "basic", "básico", "básica", "solid", "sólido", "sólida", "strong",
+            "fuerte", "dominio", "manejo", "proficiency", "hands", "on", "and", "y", "de", "en", "con",
+            "with", "the", "x", "js", "lts");
+
+    /**
+     * Catalogue id for a technology name: exact normalized name first, then the alias-aware dictionary — but only
+     * when the dictionary hit IS the technology ("RESTful API" → REST). A different tool that merely contains a known
+     * name ("Laravel Dusk", "Laravel Query Builder", "Spring Security") must not be credited as that skill.
+     */
     Long resolveSkill(String name) {
         Optional<Skill> exact = skills.findByNormalizedName(Skill.normalize(name));
         if (exact.isPresent()) return exact.get().getId();
         var found = dictionary.find(name);
-        return found.isEmpty() ? null : found.get(0).skillId();
+        if (found.size() != 1) return null;
+        var hit = found.get(0);
+        return isWholeTechnology(name, hit.matchedText()) ? hit.skillId() : null;
+    }
+
+    /** True when everything in {@code name} besides {@code matchedText} is filler words or version numbers. */
+    static boolean isWholeTechnology(String name, String matchedText) {
+        String rest = name.replace(matchedText, " ");
+        for (String w : rest.toLowerCase(Locale.ROOT).split("[^\\p{L}\\p{N}]+")) {
+            if (w.isBlank() || w.chars().allMatch(Character::isDigit) || FILLER.contains(w)) continue;
+            return false;
+        }
+        return true;
     }
 
     static boolean contains(String haystack, String needle) {

@@ -15,12 +15,12 @@ import type { RequirementDto } from './types'
 
 function RequirementList({ title, items }: { title: string; items: RequirementDto[] }) {
   return (
-    <div className="grid gap-2">
+    <div className="grid content-start gap-2">
       <h4 className="text-sm font-semibold">{title}</h4>
       {items.length === 0 ? (
         <p className="text-sm text-muted-foreground">Ninguno detectado.</p>
       ) : (
-        <ul className="grid gap-1 text-sm" aria-label={title}>
+        <ul className="grid content-start gap-1 text-sm" aria-label={title}>
           {items.map((r, i) => (
             <li key={i} className="flex flex-wrap items-center gap-1.5">
               <span>{r.text}</span>

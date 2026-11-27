@@ -20,7 +20,11 @@ public enum IntegrationCode {
     REMOTEOK("Remote OK", Category.JOB_SOURCE, List.of()),
     GREENHOUSE("Greenhouse", Category.JOB_SOURCE, List.of()),
     LEVER("Lever", Category.JOB_SOURCE, List.of()),
-    ASHBY("Ashby", Category.JOB_SOURCE, List.of());
+    ASHBY("Ashby", Category.JOB_SOURCE, List.of()),
+    GETONBOARD("Get on Board", Category.JOB_SOURCE, List.of()),
+    WEWORKREMOTELY("We Work Remotely", Category.JOB_SOURCE, List.of()),
+    LARAJOBS("LaraJobs", Category.JOB_SOURCE, List.of()),
+    FREELANCER("Freelancer.com", Category.JOB_SOURCE, List.of());
 
     public enum Category { AI, JOB_SOURCE, SCRAPING }
 

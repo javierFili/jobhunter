@@ -34,7 +34,7 @@ public final class EligibilityClassifier {
             "\\b(eu only|europe only|based in (?:the )?(?:eu|europe)|within (?:the )?(?:eu|europe|european union)|eu work permit|right to work in (?:the )?(?:eu|europe|uk)|eu citizens?|remote - european union|(?:emea|europe)[- ]based)\\b",
             Pattern.CASE_INSENSITIVE);
     private static final Pattern COUNTRY_ONLY = Pattern.compile(
-            "\\b((?:us|usa|u\\.s\\.|uk|canada|united states|united kingdom|germany|spain|india)[ -](?:only|based)|(?:must|need to|required to) (?:be )?(?:based|located|reside|live)(?: in)? (?:the )?(?:us|usa|u\\.s\\.|united states|uk|united kingdom|canada|germany|spain|eu|europe)|(?:authorized|authorised|eligible|legally able) to work in (?:the )?(?:us|usa|u\\.s\\.|united states|uk|united kingdom|canada)|us citizens?(?:hip)?|security clearance|green card|residir en (?:espa[ñn]a|m[eé]xico|argentina|chile|colombia)|residencia en (?:espa[ñn]a|m[eé]xico|argentina|chile|colombia))\\b",
+            "\\b((?:us|usa|u\\.s\\.|uk|canada|united states|united kingdom|germany|spain|india)[ -](?:only|based)|(?-i:US|USA|U\\.S\\.)[ -](?i:remote)|(?i:remote)[ -](?-i:US|USA)\\b|(?:must|need to|required to) (?:be )?(?:based|located|reside|live)(?: in)? (?:the )?(?:us|usa|u\\.s\\.|united states|uk|united kingdom|canada|germany|spain|eu|europe)|(?:authorized|authorised|eligible|legally able) to work in (?:the )?(?:us|usa|u\\.s\\.|united states|uk|united kingdom|canada)|us citizens?(?:hip)?|security clearance|green card|residir en (?:espa[ñn]a|m[eé]xico|argentina|chile|colombia)|residencia en (?:espa[ñn]a|m[eé]xico|argentina|chile|colombia))\\b",
             Pattern.CASE_INSENSITIVE);
     private static final Pattern TIMEZONE_RANGE = Pattern.compile(
             "(?:utc|gmt)\\s*([+-−]\\s*\\d{1,2})(?::\\d{2})?\\s*(?:to|-|–|and|a|hasta)\\s*(?:utc|gmt)?\\s*([+-−]\\s*\\d{1,2})",
@@ -105,6 +105,15 @@ public final class EligibilityClassifier {
                     scope = allowedIso.stream().allMatch(Geo.LATAM::contains) ? "LATAM" : "COUNTRY_RESTRICTED";
                     eligibility = "ELIGIBLE";
                     evidence = "La fuente lista Bolivia entre los países permitidos (" + allowedIso.size() + " países).";
+                } else if (structuredWorldwide && (m = COUNTRY_ONLY.matcher(all)).find()) {
+                    // a generic "worldwide" label contradicted by an explicit restriction in the posting: the text wins
+                    scope = "COUNTRY_RESTRICTED";
+                    eligibility = "NOT_ELIGIBLE";
+                    evidence = quote(all, m);
+                } else if (structuredWorldwide && (m = EUROPE_ONLY.matcher(all)).find()) {
+                    scope = "EUROPE";
+                    eligibility = "NOT_ELIGIBLE";
+                    evidence = quote(all, m);
                 } else if (structuredWorldwide) {
                     scope = "WORLDWIDE";
                     eligibility = "ELIGIBLE";

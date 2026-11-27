@@ -43,7 +43,8 @@ public final class JobDtos {
                                String attributionText, Instant firstSeenAt, Instant lastSeenAt, Instant removedAt) {
     }
 
-    public record JobDetailDto(JobSummaryDto summary, String descriptionHtml, String descriptionText,
+    /** Serialised FLAT (summary fields at the top level): the frontend's JobDetailDto extends JobSummaryDto. */
+    public record JobDetailDto(@com.fasterxml.jackson.annotation.JsonUnwrapped JobSummaryDto summary, String descriptionHtml, String descriptionText,
                                String eligibilityEvidence, List<String> remoteCountries,
                                List<JobClassification.RequiredLanguage> requiredLanguages, String applyUrl,
                                String canonicalUrl, Instant expiresAt, Instant lastSeenAt, Instant lastVerifiedAt,

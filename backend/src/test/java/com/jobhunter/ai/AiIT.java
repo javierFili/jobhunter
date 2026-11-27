@@ -111,7 +111,7 @@ class AiIT extends IntegrationTest {
         assertThat(a.path("requirements").size()).isGreaterThanOrEqualTo(4);
         // quote appears verbatim in the posting → UNKNOWN upgraded (deterministic rules already said LIKELY for "LATAM": kept)
         String job = mvc.perform(get("/api/v1/jobs/" + jobId).header("Authorization", bearer(admin))).andReturn().getResponse().getContentAsString();
-        assertThat(Json.tree(job).path("summary").path("boliviaEligibility").asString()).isIn("ELIGIBLE", "LIKELY");
+        assertThat(Json.tree(job).path("boliviaEligibility").asString()).isIn("ELIGIBLE", "LIKELY");
         int callsBefore = STUB.requests.size();
         analyzeAndWait(); // cached: no new provider call
         assertThat(STUB.requests.size()).isEqualTo(callsBefore);
@@ -130,7 +130,7 @@ class AiIT extends IntegrationTest {
         mvc.perform(post("/api/v1/jobs/" + unknownJob + "/analyze").header("Authorization", bearer(admin))).andExpect(status().isAccepted());
         waitTask("/api/v1/jobs/" + unknownJob + "/analysis");
         String job = mvc.perform(get("/api/v1/jobs/" + unknownJob).header("Authorization", bearer(admin))).andReturn().getResponse().getContentAsString();
-        assertThat(Json.tree(job).path("summary").path("boliviaEligibility").asString()).isEqualTo("UNKNOWN");
+        assertThat(Json.tree(job).path("boliviaEligibility").asString()).isEqualTo("UNKNOWN");
     }
 
     @Test

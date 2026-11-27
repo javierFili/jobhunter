@@ -32,7 +32,7 @@ describe('Descubrir empleos', () => {
     }
     const unknown = screen.getByRole('article', { name: 'TEST DATA Platform Engineer' })
     expect(within(unknown).queryByText(/Accesible desde Bolivia|Probablemente accesible/)).not.toBeInTheDocument()
-    expect(within(unknown).getByText('Vía Himalayas.app')).toBeInTheDocument()
+    expect(within(unknown).getByText('Vía Himalayas')).toBeInTheDocument()
     const link = within(screen.getByRole('article', { name: 'TEST DATA Backend Engineer' })).getByRole('link', { name: /Vía Remotive/ })
     expect(link).toHaveAttribute('href', 'https://example.test/remotive/1')
     expect(link).toHaveAttribute('target', '_blank')

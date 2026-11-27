@@ -11,6 +11,10 @@ export type IntegrationCode =
   | 'GREENHOUSE'
   | 'LEVER'
   | 'ASHBY'
+  | 'GETONBOARD'
+  | 'WEWORKREMOTELY'
+  | 'LARAJOBS'
+  | 'FREELANCER'
 export type IntegrationCategory = 'AI' | 'JOB_SOURCE' | 'SCRAPING'
 export type IntegrationStatus = 'UNKNOWN' | 'OK' | 'ERROR' | 'DISABLED'
 

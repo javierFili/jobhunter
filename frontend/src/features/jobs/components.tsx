@@ -42,10 +42,10 @@ export function Attribution({ sources, references }: { sources?: JobSourceRef[];
             {i > 0 && ' · '}
             {r.sourceUrl ? (
               <ExternalLink href={r.sourceUrl} className="underline underline-offset-2 hover:text-foreground">
-                Vía {r.attributionText}
+                {r.attributionText}
               </ExternalLink>
             ) : (
-              <>Vía {r.attributionText}</>
+              <>{r.attributionText}</>
             )}
           </span>
         ))}
@@ -60,10 +60,10 @@ export function Attribution({ sources, references }: { sources?: JobSourceRef[];
           {i > 0 && ' · '}
           {s.sourceUrl ? (
             <ExternalLink href={s.sourceUrl} className="underline underline-offset-2 hover:text-foreground">
-              Vía {s.attributionText}
+              {s.attributionText}
             </ExternalLink>
           ) : (
-            <>Vía {s.attributionText}</>
+            <>{s.attributionText}</>
           )}
         </span>
       ))}

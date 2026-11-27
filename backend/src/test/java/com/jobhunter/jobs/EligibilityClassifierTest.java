@@ -111,4 +111,16 @@ class EligibilityClassifierTest {
         assertThat(EligibilityClassifier.classify(job("remotive").title("Sr. Java Engineer").build()).seniority()).isEqualTo("SENIOR");
         assertThat(EligibilityClassifier.classify(job("remotive").title("Junior PHP Developer").build()).seniority()).isEqualTo("JUNIOR");
     }
+
+    @Test
+    void explicitCountryRestrictionInTheTextBeatsAGenericWorldwideLabel() {
+        JobClassification c = EligibilityClassifier.classify(job("weworkremotely").title("Senior Java Engineer - US Remote")
+                .allowedLocations(List.of("Anywhere in the World")).build());
+        assertThat(c.boliviaEligibility()).isEqualTo("NOT_ELIGIBLE");
+        assertThat(c.evidence()).contains("US Remote");
+        // the pronoun "us" is not the country
+        JobClassification ok = EligibilityClassifier.classify(job("weworkremotely").title("Join us remote-first")
+                .allowedLocations(List.of("Anywhere in the World")).build());
+        assertThat(ok.boliviaEligibility()).isEqualTo("ELIGIBLE");
+    }
 }

@@ -34,6 +34,22 @@ Todos los cambios relevantes de este proyecto se documentan aquí. Formato basad
 - Despliegue sin Docker: `deploy/jobhunter.service` (systemd endurecido), `deploy/nginx-jobhunter.conf` (TLS, CSP,
   HSTS), `scripts/backup.sh` (mysqldump + archivos cifrados con age, rotación 14 días).
 
+### Agregado — nuevas fuentes (2026-11-27)
+- Conectores **Get on Board** (API), **We Work Remotely** (RSS), **LaraJobs** (RSS) y **Freelancer.com** (API de proyectos),
+  con interruptor, prueba de conexión y límites en el panel (migración V12). Lector RSS endurecido contra XXE.
+- Evaluación del resto de plataformas pedidas en `INTEGRATIONS.md` §1b.
+
+### Corregido (2026-11-27, segunda ronda)
+- `GET /jobs/{id}` devolvía los datos anidados en `summary` y la vista de detalle fallaba («Cannot read properties of
+  undefined») → respuesta plana como espera el frontend (`@JsonUnwrapped`) + prueba de contrato.
+- Requisitos como «Laravel Dusk» o «Laravel Query Builder» se acreditaban como «Laravel» (fortalezas falsas) → solo se
+  resuelve a una habilidad si el resto del nombre son palabras genéricas o versiones.
+- Atribución duplicada «Vía Vía Himalayas».
+- Una etiqueta genérica «mundial» ya no gana a una restricción explícita en el texto («US Remote», «US citizens»).
+- Presupuestos fijos de proyectos interpretados como salario mensual (USD 250 → USD 40 000/mes).
+- Si la ingesta de un feed fallaba entera, la fuente quedaba marcada como descargada y se reutilizaba una caché vacía.
+- Columnas «Obligatorias/Deseables» desalineadas en el análisis de IA.
+
 ### Corregido (primera búsqueda real con el perfil del usuario, 2026-11-27)
 - La búsqueda por palabra clave usaba prefijo FULLTEXT (`java*`) y "java" coincidía con "JavaScript" → ahora palabra completa.
 - Remote OK ignoraba la palabra clave y traía todo el feed → usa `?tag=` (filtro por etiqueta de la fuente).

@@ -154,6 +154,10 @@ public class SearchOrchestrator {
                 duplicates += r.duplicates();
                 se.finish(r.status(), r.requests(), r.fetched(), r.fresh(), r.duplicates(), r.cost(), r.runId(), r.datasetId(),
                         null, r.message(), clock.instant());
+                if ("FAILED".equals(r.status())) {
+                    failedSources++;
+                    errors.add(source.getDisplayName() + ": " + r.message());
+                }
             } catch (RuntimeException e) {
                 failedSources++;
                 String message = e instanceof ApiException ae ? ae.getMessage() : e.getClass().getSimpleName() + ": " + e.getMessage();
@@ -231,8 +235,12 @@ public class SearchOrchestrator {
                 fetched.items().size(), fetched.costUsd(), fetched.costIsEstimate(), 200, true,
                 (int) Duration.between(started, clock.instant()).toMillis(), null));
         integrations.recordSuccess(integration);
-        tx.executeWithoutResult(s -> sources.findById(source.getId()).ifPresent(x -> x.touchFetch(clock.instant())));
-        return ingest(source, fetched);
+        SourceRun run = ingest(source, fetched);
+        // Only a download that was actually stored may be reused as the cache of a whole-feed source.
+        if (!"FAILED".equals(run.status())) {
+            tx.executeWithoutResult(s -> sources.findById(source.getId()).ifPresent(x -> x.touchFetch(clock.instant())));
+        }
+        return run;
     }
 
     private SourceRun runBoards(SavedSearch search, JobSource source, JobSourceConnector connector, Map<String, String> creds) {
@@ -311,7 +319,8 @@ public class SearchOrchestrator {
         int fresh = (int) result.count(JobIngestionService.Outcome.NEW);
         int dupes = (int) result.count(JobIngestionService.Outcome.MERGED_DUPLICATE);
         String msg = result.failed() > 0 ? result.failed() + " elementos no se pudieron procesar" : null;
-        return new SourceRun("SUCCEEDED", fetched.requests(), fetched.items().size(), fresh, dupes, fetched.costUsd(), ids,
+        boolean allFailed = !fetched.items().isEmpty() && result.failed() >= fetched.items().size();
+        return new SourceRun(allFailed ? "FAILED" : "SUCCEEDED", fetched.requests(), fetched.items().size(), fresh, dupes, fetched.costUsd(), ids,
                 fetched.externalRunId(), fetched.externalDatasetId(), msg);
     }
 

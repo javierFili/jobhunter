@@ -162,7 +162,11 @@ class JobsIT extends IntegrationTest {
                 .andExpect(jsonPath("$.totalElements").value(1));
         mvc.perform(get("/api/v1/jobs/" + id).header("Authorization", bearer(token)))
                 .andExpect(jsonPath("$.references[0].attributionText").value("Vía Himalayas"))
-                .andExpect(jsonPath("$.eligibilityEvidence").exists());
+                .andExpect(jsonPath("$.eligibilityEvidence").exists())
+                // flat contract: summary fields live at the top level (no nested "summary" object)
+                .andExpect(jsonPath("$.title").value("Java Engineer"))
+                .andExpect(jsonPath("$.skills").isArray())
+                .andExpect(jsonPath("$.summary").doesNotExist());
         mvc.perform(put("/api/v1/jobs/" + id + "/state").header("Authorization", bearer(token))
                         .contentType(MediaType.APPLICATION_JSON).content(json(Map.of("hidden", true))))
                 .andExpect(jsonPath("$.hidden").value(true));

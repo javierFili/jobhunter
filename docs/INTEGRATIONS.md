@@ -203,6 +203,30 @@ deben revisarse antes de abrir la aplicación a otros usuarios.
 
 ---
 
+## 1b. Fuentes agregadas el 2026-11-27 (evaluación de la lista del usuario)
+
+Comprobado en vivo con peticiones reales. Regla: solo API o feed público; nada de *scraping* de HTML ni de
+plataformas que lo prohíban (para eso existe Apify, desactivado).
+
+| Plataforma | Estado | Cómo | Notas |
+|---|---|---|---|
+| **Get on Board** | ✅ Integrada (`getonboard`) | API pública `/api/v0/search/jobs` | La mejor fuente LATAM: salario USD/mes, seniority y modalidad. `remote_local` = remoto solo desde los países listados. `fully_remote` sin país queda «desconocida» hasta que la IA encuentre evidencia. |
+| **We Work Remotely** | ✅ Integrada (`weworkremotely`) | RSS back-end + full-stack | «Anywhere in the World» es su valor por defecto: si el texto restringe («US Remote»), gana el texto. |
+| **LaraJobs** | ✅ Integrada (`larajobs`) | RSS `/feed` | El feed no trae descripción; se resume con etiquetas/ubicación/salario. |
+| **Freelancer.com** | ✅ Integrada (`freelancer`) | API pública de proyectos activos (sin token) | Son proyectos, no empleos. El presupuesto fijo NO se trata como salario; la tarifa por hora sí. |
+| RemoteOK | ✅ Ya estaba | API (`?tag=`) | |
+| Lemon.io / Arc.dev | ⚠️ Indirecto | Sus ofertas llegan vía Himalayas/Remotive/RemoteOK | Sin API pública propia. |
+| Upwork | ❌ | RSS cerrado (403); API GraphQL solo con app aprobada (OAuth) | Requiere solicitar acceso de desarrollador a Upwork. |
+| Workana | ❌ | Sin API; bloquea bots (403) | Solo vía Apify (y revisar términos). |
+| Fiverr | ❌ No aplica | No publica ofertas: el freelancer publica *gigs* | Crear perfil manualmente. |
+| Malt / Shakers / Manfred / Tecnoempleo | ❌ | Sin API pública; Tecnoempleo bloquea (403) | Manual o Apify. |
+| Turing / Toptal / BairesDev / Encora / Globant | ❌ No aplica | Redes de talento: se postula una vez al *pool* | Si publican en Greenhouse/Lever/Ashby, seguirlas en «Empresas seguidas». |
+| Torre.ai | ⏸ Pendiente | API de búsqueda no documentada (respondió 400) | Investigar el formato oficial antes de integrar. |
+| Wellfound | ❌ | Sin API; anti-bot agresivo | Manual. |
+| RemotoJob / RemotoList / RemoteJobs.lat | ❌ | Solo HTML, sin feed | Apify si se habilita. |
+| LinkedIn | ❌ | Términos prohíben el *scraping* | Cobertura indirecta vía SerpApi (Google Jobs). |
+| Discord / Slack / Telegram | ❌ | Requiere ser miembro y bots autorizados por cada grupo | Fuera de alcance. |
+
 ## 2. SerpApi — Google Jobs [V] https://serpapi.com/google-jobs-api
 
 - `GET https://serpapi.com/search?engine=google_jobs&q=…&api_key=…`. La clave viaja como parámetro

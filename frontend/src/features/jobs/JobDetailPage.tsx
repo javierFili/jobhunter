@@ -211,10 +211,10 @@ export function JobDetailPage() {
                     <li key={`${r.sourceCode}-${i}`} className="grid gap-0.5">
                       {r.sourceUrl ? (
                         <ExternalLink href={r.sourceUrl} className="font-medium text-primary hover:underline">
-                          Vía {r.attributionText}
+                          {r.attributionText}
                         </ExternalLink>
                       ) : (
-                        <span className="font-medium">Vía {r.attributionText}</span>
+                        <span className="font-medium">{r.attributionText}</span>
                       )}
                       <span className="text-xs text-muted-foreground">
                         Vista por primera vez {formatRelative(r.firstSeenAt)}
