@@ -1,0 +1,33 @@
+# /etc/systemd/system/jobhunter.service — JobHunter AI backend (sin Docker)
+# Instalación: ver docs/DEVELOPMENT_SETUP.md §7
+[Unit]
+Description=JobHunter AI (Spring Boot)
+After=network-online.target mysql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=jobhunter
+Group=jobhunter
+WorkingDirectory=/opt/jobhunter
+EnvironmentFile=/etc/jobhunter/jobhunter.env
+ExecStart=/usr/bin/java -Xms256m -Xmx768m -XX:+ExitOnOutOfMemoryError -jar /opt/jobhunter/jobhunter.jar
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=10
+
+# Endurecimiento
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/jobhunter
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

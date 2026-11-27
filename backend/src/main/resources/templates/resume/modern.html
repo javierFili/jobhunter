@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html th:lang="${lang}">
+<head>
+<meta charset="UTF-8"/>
+<title th:text="${doc.basics.fullName}">CV</title>
+<style>
+  @page { size: A4; margin: 16mm 16mm 16mm 16mm; }
+  body { font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif; font-size: 9.6pt; color: #111; line-height: 1.35; }
+  h1 { font-size: 21pt; color: #0f172a; margin: 0 0 2pt 0; }
+  .headline { font-size: 11.5pt; color: #1d4ed8; margin-bottom: 4pt; }
+  .contact { font-size: 8.8pt; color: #333; margin-bottom: 8pt; }
+  h2 { font-size: 10.5pt; letter-spacing: 0.3pt; border-bottom: 2px solid #1d4ed8; color: #1d4ed8;
+       margin: 11pt 0 5pt 0; padding-bottom: 2pt; }
+  .entry { margin-bottom: 7pt; page-break-inside: avoid; }
+  .entry-head { font-weight: bold; }
+  .meta { color: #444; font-size: 8.8pt; }
+  ul { margin: 2pt 0 0 0; padding-left: 13pt; }
+  li { margin-bottom: 1.5pt; }
+  .skills p { margin: 1.5pt 0; }
+  a { color: #111; text-decoration: none; }
+</style>
+</head>
+<body>
+  <h1 th:text="${doc.basics.fullName}">Nombre</h1>
+  <div class="headline" th:if="${doc.basics.headline}" th:text="${doc.basics.headline}">Headline</div>
+  <div class="contact">
+    <span th:if="${doc.basics.email}" th:text="${doc.basics.email}"></span>
+    <span th:if="${doc.basics.phone}" th:text="${' · ' + doc.basics.phone}"></span>
+    <span th:if="${doc.basics.location}" th:text="${' · ' + doc.basics.location}"></span>
+    <th:block th:if="${doc.basics.links}" th:each="l : ${doc.basics.links}">
+      <span> · </span><a th:href="${l.url}" th:text="${l.url}"></a>
+    </th:block>
+  </div>
+
+  <th:block th:if="${doc.summary}">
+    <h2 th:text="${labels.summary}">Resumen</h2>
+    <p th:text="${doc.summary}"></p>
+  </th:block>
+
+  <th:block th:unless="${#lists.isEmpty(doc.experience)}">
+    <h2 th:text="${labels.experience}">Experiencia</h2>
+    <div class="entry" th:each="e : ${doc.experience}">
+      <div class="entry-head"><span th:text="${e.title}"></span> — <span th:text="${e.company}"></span></div>
+      <div class="meta"><span th:text="${fmt.range(e.startDate, e.endDate, e.current)}"></span><span th:if="${e.location}" th:text="${' · ' + e.location}"></span></div>
+      <ul th:unless="${#lists.isEmpty(e.bullets)}"><li th:each="b : ${e.bullets}" th:text="${b.text}"></li></ul>
+    </div>
+  </th:block>
+
+  <th:block th:unless="${#lists.isEmpty(doc.projects)}">
+    <h2 th:text="${labels.projects}">Proyectos</h2>
+    <div class="entry" th:each="p : ${doc.projects}">
+      <div class="entry-head"><span th:text="${p.name}"></span><span th:if="${p.role}" th:text="${' — ' + p.role}"></span></div>
+      <div class="meta"><span th:text="${fmt.kind(p.kind)}"></span><span th:if="${p.url}" th:text="${' · ' + p.url}"></span></div>
+      <ul th:unless="${#lists.isEmpty(p.bullets)}"><li th:each="b : ${p.bullets}" th:text="${b.text}"></li></ul>
+    </div>
+  </th:block>
+
+  <th:block th:unless="${#lists.isEmpty(doc.skills)}">
+    <h2 th:text="${labels.skills}">Habilidades</h2>
+    <div class="skills"><p th:each="g : ${doc.skills}"><b th:text="${g.label + ':'}"></b> <span th:text="${#strings.listJoin(g.items.![name], ', ')}"></span></p></div>
+  </th:block>
+
+  <th:block th:unless="${#lists.isEmpty(doc.education)}">
+    <h2 th:text="${labels.education}">Educación</h2>
+    <div class="entry" th:each="e : ${doc.education}">
+      <div class="entry-head"><span th:text="${e.degree != null ? e.degree : e.institution}"></span><span th:if="${e.field}" th:text="${' — ' + e.field}"></span></div>
+      <div class="meta"><span th:if="${e.degree != null}" th:text="${e.institution + ' · '}"></span><span th:text="${fmt.range(e.startDate, e.endDate, false)}"></span></div>
+    </div>
+  </th:block>
+
+  <th:block th:unless="${#lists.isEmpty(doc.certifications)}">
+    <h2 th:text="${labels.certifications}">Certificaciones</h2>
+    <ul><li th:each="c : ${doc.certifications}"><span th:text="${c.name}"></span><span th:if="${c.issuer}" th:text="${' — ' + c.issuer}"></span><span th:if="${c.date}" th:text="${' (' + fmt.ym(c.date) + ')'}"></span></li></ul>
+  </th:block>
+
+  <th:block th:unless="${#lists.isEmpty(doc.languages)}">
+    <h2 th:text="${labels.languages}">Idiomas</h2>
+    <p><th:block th:each="l, st : ${doc.languages}"><span th:text="${fmt.languageName(l.code) + ' (' + fmt.level(l.level) + ')'}"></span><span th:unless="${st.last}"> · </span></th:block></p>
+  </th:block>
+</body>
+</html>

@@ -1,0 +1,24 @@
+# Integration tests run against the LOCAL MySQL schema jobhunter_test (no Docker). See scripts/db-setup.sql.
+spring:
+  datasource:
+    url: ${JOBHUNTER_TEST_DB_URL:jdbc:mysql://localhost:3306/jobhunter_test?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8}
+    username: ${JOBHUNTER_TEST_DB_USER:jobhunter_test}
+    password: ${JOBHUNTER_TEST_DB_PASSWORD:JhTest#2026pw}
+  flyway:
+    clean-disabled: false
+
+jobhunter:
+  rate-limit:
+    general-per-minute: 100000
+    ai-per-minute: 100000
+    search-runs-per-minute: 100000
+  security:
+    login-attempts-per-minute: 100000
+    # TEST DATA ONLY — not a real secret
+    jwt-secret: dGVzdC1vbmx5LWp3dC1zZWNyZXQtZm9yLWpvYmh1bnRlci1pbnRlZ3JhdGlvbi10ZXN0cw==
+  crypto:
+    master-key: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+  files:
+    root: ${java.io.tmpdir}/jobhunter-test-files
+  scheduler:
+    enabled: false

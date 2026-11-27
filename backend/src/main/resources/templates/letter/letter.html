@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html th:lang="${lang}">
+<head>
+<meta charset="UTF-8"/>
+<title th:text="${subject != null ? subject : name}">Carta</title>
+<style>
+  @page { size: A4; margin: 22mm 22mm 22mm 22mm; }
+  body { font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif; font-size: 10.5pt; color: #111; line-height: 1.5; }
+  .sender { font-size: 10pt; margin-bottom: 14pt; }
+  .sender b { font-size: 12pt; }
+  .date { margin-bottom: 14pt; color: #333; }
+  .subject { font-weight: bold; margin-bottom: 12pt; }
+  p { margin: 0 0 9pt 0; }
+</style>
+</head>
+<body>
+  <div class="sender"><b th:text="${name}">Nombre</b><br/>
+    <span th:if="${email}" th:text="${email}"></span><span th:if="${phone}" th:text="${' · ' + phone}"></span></div>
+  <div class="date" th:text="${date}"></div>
+  <div class="subject" th:if="${subject}" th:text="${subject}"></div>
+  <p th:each="p : ${paragraphs}" th:text="${p}"></p>
+</body>
+</html>

@@ -1,0 +1,73 @@
+server:
+  port: ${SERVER_PORT:8095}
+  error:
+    include-stacktrace: never
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+spring:
+  application:
+    name: jobhunter
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: ${JOBHUNTER_DB_URL:jdbc:mysql://localhost:3306/jobhunter?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8}
+    username: ${JOBHUNTER_DB_USER:jobhunter}
+    password: ${JOBHUNTER_DB_PASSWORD:JhDev#2026pw}
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+          batch_size: 50
+        order_inserts: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+  jackson:
+    default-property-inclusion: always
+
+jobhunter:
+  security:
+    jwt-secret: ${JOBHUNTER_JWT_SECRET:}
+    access-token-ttl: 15m
+    refresh-token-ttl: 14d
+    cookie-secure: ${JOBHUNTER_COOKIE_SECURE:false}
+    cors-origins: ${JOBHUNTER_CORS_ORIGINS:http://localhost:5175}
+  crypto:
+    master-key: ${JOBHUNTER_MASTER_KEY:}
+  files:
+    root: ${JOBHUNTER_FILES_DIR:${user.home}/.local/share/jobhunter/files}
+
+springdoc:
+  api-docs:
+    path: /api/docs/openapi
+    enabled: ${JOBHUNTER_API_DOCS:false}   # OpenAPI/Swagger only when explicitly enabled (dev)
+  swagger-ui:
+    path: /api/docs
+    enabled: ${JOBHUNTER_API_DOCS:false}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  level:
+    org.springframework.web.reactive.function.client: WARN
